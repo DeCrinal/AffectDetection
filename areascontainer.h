@@ -33,6 +33,16 @@ public:
     };
 
 private:
+    ///! Минимальная длина трещены
+    static const int SCRATCH_MIN_LENGTH {50};
+    ///! Максимальная ширина трещены
+    static const int SCRATCH_MAX_WIDTH {20};
+    ///! Максимальная мера выбоины
+    static const int POINT_MAX_MEASURE {15};
+    ///! Уникальный-идентификатор области
+    static int mID;
+
+    ///! Тип текущей области
     AreaType mAreaType {AreaType::Undefined};
     ///! Множество точек заданной области
     set<pair<int, int>> mPoints;
@@ -43,8 +53,6 @@ private:
     vector<vector<cv::Point>> mBoardingRectContours;
     ///! Площадь текущей области
     int mSquare {0};
-    ///! Уникальный-идентификатор области
-    static int mID;
 
 
 public:
@@ -67,12 +75,18 @@ public:
     ///! Печатает все точки текущей области в стандартный вывод
     void printPoints(bool needPrintID = false) const;
 
+    ///! Возвращает границы обрамляющего прямоугольника
     vector<vector<cv::Point>> getBoardingRectContours() const;
     RotatedRect getBoardingRect() const;
+    ///! Метод слияния
     void merge(const shared_ptr<Area> &areaPtr);
+    ///! Метод слияния
     void merge(const set<pair<int, int>> &points);
+    ///! Метод слияния
     void merge(const Area& ar);
+    ///! Метод получения барицентров
     pair<int, int> getBaricenter() const;
+    ///! Метод получения типа области
     AreaType getAreaType() const;
 
 private:
@@ -96,6 +110,7 @@ public:
 
     ///! Распределяет заданную точку в подходящую область. При необходимости
     /// создается новая область.
+    ///
     /// Прим.: при использовании для обновления внутренних состояний требуется
     /// вызвать пару методов beginUpdateContainer() и endUPdateContainer()
     void addPoint(const pair<int, int> &point);
@@ -118,7 +133,6 @@ public:
     ///! Вспомогательный метод. Используется для оптимизации обновления
     /// внутренних состояний
     void endUpdateContainer();
-
 
 private :
 };

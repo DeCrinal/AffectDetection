@@ -18,23 +18,6 @@ bool Area::isOnBorder(const pair<int, int> &point) const{
     return isBorder;
 }
 
-bool Area::isBorder(const pair<int, int> &point) const
-{
-    int dx[] = {-1, 0, 1, -1, 1, -1, 0, 1};
-    int dy[] = {-1, -1, -1, 0, 0, 1, 1, 1};
-
-    for (int i = 0; i < 8; ++i) {
-        int newX = point.first + dx[i];
-        int newY = point.second + dy[i];
-
-        if(mPoints.find({newX, newY}) == mPoints.end()){
-            return true;
-        }
-    }
-
-    return false;
-}
-
 void Area::printPoints(bool needPrintID) const
 {
     if(needPrintID){
@@ -74,6 +57,23 @@ int Area::getSquare()const{
     return mPoints.size();
 }
 
+bool Area::isBorder(const pair<int, int> &point) const
+{
+    int dx[] = {-1, 0, 1, -1, 1, -1, 0, 1};
+    int dy[] = {-1, -1, -1, 0, 0, 1, 1, 1};
+
+    for (int i = 0; i < 8; ++i) {
+        int newX = point.first + dx[i];
+        int newY = point.second + dy[i];
+
+        if(mPoints.find({newX, newY}) == mPoints.end()){
+            return true;
+        }
+    }
+
+    return false;
+}
+
 set<pair<int, int> > Area::getBorderPoints() const
 {
     set<pair<int, int>> borderPoints;
@@ -106,7 +106,6 @@ Area::AreaType Area::getAreaType() const
 
 void Area::updateCharacticParams()
 {
-    //Вроде бы не должно переполниться на адекватных размерах областей и изображений
     long long xSum {0};
     long long ySum {0};
     for(const auto &pt : mPoints){
@@ -127,11 +126,11 @@ void Area::updateCharacticParams()
     vector<cv::Point> boxPoints(std::begin(box), std::end(box));
     mBoardingRectContours = {boxPoints};
 
-    if(mBoardingRect.size.width < 15 && mBoardingRect.size.height < 15){
+    if(mBoardingRect.size.width < POINT_MAX_MEASURE && mBoardingRect.size.height < POINT_MAX_MEASURE){
         mAreaType = AreaType::Point;
     }
-    else if(    (mBoardingRect.size.height < 20 && mBoardingRect.size.width > 50)
-            || 	(mBoardingRect.size.width < 20 && mBoardingRect.size.height > 50) ){
+    else if(    (mBoardingRect.size.height < SCRATCH_MAX_WIDTH && mBoardingRect.size.width > SCRATCH_MIN_LENGTH)
+            || 	(mBoardingRect.size.width < SCRATCH_MAX_WIDTH && mBoardingRect.size.height > SCRATCH_MIN_LENGTH) ){
         mAreaType = AreaType::Scratch;
     }
     else{
