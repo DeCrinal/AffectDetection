@@ -6,10 +6,10 @@ CONFIG -= qt
 INCLUDEPATH += /usr/include/opencv4
 LIBS += -L/usr/lib/x86_64-linux-gnu -lopencv_core -lopencv_imgcodecs -lopencv_highgui -lopencv_imgproc
 SOURCES += \
-        areascontainer.cpp \
-        imageprocesser.cpp \
-        main.cpp
+        src/areascontainer.cpp \
+        src/imageprocesser.cpp \
+        src/main.cpp
 
 HEADERS += \
-    areascontainer.h \
-    imageprocesser.h
+    src/areascontainer.h \
+    src/imageprocesser.h
