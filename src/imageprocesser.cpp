@@ -50,6 +50,20 @@ int ImageProcesser::getPercentOfSquare(int size, double part){
     return size * size * part;
 }
 
+void ImageProcesser::removeShadow(int borderSize)
+{
+    cv::Mat result = mAllImagesInStages.at(Gray);
+    for(int y = 0; y < result.rows; y++){
+        for(int x = 0; x < result.cols; x++){
+            if(y < borderSize || x < borderSize || abs(x - result.cols) < borderSize ||
+               abs(y - result.rows) < borderSize){
+                result.at<uchar>(y, x) = 255;
+            }
+        }
+    }
+    mAllImagesInStages[RemovedShadow] = result;
+}
+
 void ImageProcesser::showImage(ImageStage stage) const
 {
     if(mAllImagesInStages.find(stage) == mAllImagesInStages.end()){
@@ -65,6 +79,9 @@ void ImageProcesser::showImage(ImageStage stage) const
         break;
     case ImageStage::BinImage :
         title = "Binary Image";
+        break;
+    case ImageStage::RemovedShadow :
+        title = "Removed shadow";
         break;
     case ImageStage::Blured :
         title = "Blured Image";
@@ -91,7 +108,8 @@ cv::Mat ImageProcesser::getImage(ImageStage stage) const
 }
 
 void ImageProcesser::fillEmptinesInAreas(){
-    cv::Mat imageProc = mAllImagesInStages[Gray];
+    //cv::Mat imageProc = mAllImagesInStages[Gray];
+    cv::Mat imageProc = mAllImagesInStages[RemovedShadow];
     for(int y = 1; y < imageProc.rows - mRectSize; y += mRectSize){
         for(int x = 1; x < imageProc.cols - mRectSize; x += mRectSize){
             cv::Rect windowRect(x, y, mRectSize, mRectSize);
@@ -141,10 +159,12 @@ void ImageProcesser::generateFinalImage(){
         strsToPut.push_back("Fig." + std::to_string(++counter));
         Area::AreaType type = area->getAreaType();
         if(type == Area::AreaType::Point){
-            strsToPut.push_back("Type: Point");
+            strsToPut.push_back("Type: Point "
+                                + std::to_string(area->getMaximalDimensial()) + "mm");
         }
         else if(type == Area::AreaType::Scratch){
-            strsToPut.push_back("Scratch");
+            strsToPut.push_back("Scratch "
+                                + std::to_string(area->getMinimalDimensial()) + "mm");
         }
         else if(type == Area::AreaType::Zone){
             strsToPut.push_back(
@@ -177,7 +197,7 @@ void ImageProcesser::showAndSave(const cv::Mat image, const std::string &title, 
 }
 
 int ImageProcesser::readImageFromDir(){
-    const cv::Mat imageOriginal = cv::imread("/home/rai/Documents/VirtualAssist/Part3/Part3/pics/Part3_04_2.jpg",
+    const cv::Mat imageOriginal = cv::imread("/home/rai/Documents/VirtualAssist/AffectDetection/pics/clearPic2.jpg",
                                              cv::IMREAD_GRAYSCALE);
 
     if(imageOriginal.empty()){
@@ -185,7 +205,23 @@ int ImageProcesser::readImageFromDir(){
     }
 
     mAllImagesInStages[Original] = imageOriginal;
-    mAllImagesInStages[Gray] = imageOriginal;
+    cv::medianBlur(mAllImagesInStages[Original], mAllImagesInStages[Gray], 5);
+    cv::Mat blurredMat;
+
+    cv::GaussianBlur(mAllImagesInStages[Gray], blurredMat, cv::Size(5, 5), 0);
+    mAllImagesInStages[Gray] = blurredMat;
+
+
+    cv::Mat adaptiveThresholded;
+    cv::adaptiveThreshold(mAllImagesInStages[Gray], adaptiveThresholded, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 51, 2);
+
+    mAllImagesInStages[Gray] = adaptiveThresholded;
+
+    cv::Mat medianBlurred1, medianBlurred2;
+    cv::medianBlur(mAllImagesInStages[Gray], medianBlurred1, 15);
+    cv::medianBlur(medianBlurred1, medianBlurred2, 9);
+    mAllImagesInStages[Gray] = medianBlurred2;
+
     mAllImagesInStages[RGB] = cv::Mat(imageOriginal.size(), CV_8UC3);
     cv::cvtColor(mAllImagesInStages[Original], mAllImagesInStages[RGB], cv::COLOR_GRAY2RGB);
 

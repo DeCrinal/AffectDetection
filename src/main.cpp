@@ -11,6 +11,10 @@ int main()
     }
 
     imageProcesser.showImage(ImageStage::Original);
+    imageProcesser.showImage(ImageStage::Gray);
+
+    imageProcesser.removeShadow(15);
+    imageProcesser.showImage(ImageStage::RemovedShadow);
 
     //Заполнение пустот внутри областей
     imageProcesser.fillEmptinesInAreas();
@@ -18,7 +22,8 @@ int main()
     imageProcesser.showImage(ImageStage::Filled);
 
     //Применение размытия
-    imageProcesser.applyMedianBlur(1, 5);
+    //imageProcesser.applyMedianBlur(1, 5);
+    imageProcesser.applyMedianBlur(1, 15);
     //Вывод изображения
     imageProcesser.showImage(ImageStage::Blured);
 

@@ -62,7 +62,11 @@ public:
     ///! Добавляет точку в область
     void append(const pair<int, int> &point);
     ///! Возвращает площадь
-    int getSquare()const;
+    int getSquare() const;
+    ///! Возвращает максимальное измерение данной области
+    int getMaximalDimensial() const;
+    ///! Возвращает минимальное измерение данной области
+    int getMinimalDimensial() const;
     ///! Возвращает множество точек-границ текущей области
     set<pair<int, int>> getBorderPoints() const;
     ///! Возвращает множество точек текущей области

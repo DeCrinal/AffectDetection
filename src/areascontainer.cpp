@@ -57,6 +57,16 @@ int Area::getSquare()const{
     return mPoints.size();
 }
 
+int Area::getMaximalDimensial() const
+{
+    return std::max(mBoardingRect.size.width, mBoardingRect.size.height);
+}
+
+int Area::getMinimalDimensial() const
+{
+    return std::min(mBoardingRect.size.width, mBoardingRect.size.height);
+}
+
 bool Area::isBorder(const pair<int, int> &point) const
 {
     int dx[] = {-1, 0, 1, -1, 1, -1, 0, 1};

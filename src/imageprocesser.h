@@ -11,6 +11,7 @@ class AreasContainer;
 enum ImageStage : uint8_t{
     Original,
     Gray,
+    RemovedShadow,
     Filled,
     Blured,
     BinImage,
@@ -58,6 +59,7 @@ public:
     ///< Возвращает целочисленное значение количества пикселей в квадрате размером size*part
     /// part - в диапозоне [0:1]
     int getPercentOfSquare(int size, double part);
+    void removeShadow(int borderSize);
 private:
     ///< Метод осуществляет заполнение области в указанных координатах (x0, y0) квадратом
     /// размера size в изображении image
